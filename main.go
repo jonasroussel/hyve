@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/jonasroussel/proxbee/acme"
 	"github.com/jonasroussel/proxbee/config"
 	"github.com/jonasroussel/proxbee/server"
 )
@@ -11,6 +12,9 @@ func main() {
 
 	// Load store
 	config.STORE.Load()
+
+	// Load user
+	acme.LoadUser()
 
 	// Create TLS server
 	tlsListener, tlsServer, tlsHandler := server.NewTLS()

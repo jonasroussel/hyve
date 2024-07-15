@@ -35,11 +35,11 @@ func (u User) GetPrivateKey() crypto.PrivateKey {
 }
 
 func LoadUser() error {
-	dataDir := config.DATA_DIR + "/user"
+	userDir := config.DATA_DIR + "/user"
 
-	rawReg, err := os.ReadFile(dataDir + "/registration.json")
+	rawReg, err := os.ReadFile(userDir + "/registration.json")
 	if os.IsNotExist(err) {
-		user, err := CreateAccount(dataDir)
+		user, err := CreateAccount(userDir)
 		if err != nil {
 			return err
 		}
@@ -57,7 +57,7 @@ func LoadUser() error {
 			return err
 		}
 
-		rawKey, err := os.ReadFile(dataDir + "/private.key")
+		rawKey, err := os.ReadFile(userDir + "/private.key")
 		if err != nil {
 			return err
 		}
