@@ -13,6 +13,7 @@ import (
 
 	"github.com/go-acme/lego/v4/lego"
 	"github.com/go-acme/lego/v4/registration"
+
 	"github.com/jonasroussel/proxbee/tools"
 )
 
@@ -34,11 +35,9 @@ func (u User) GetPrivateKey() crypto.PrivateKey {
 }
 
 func LoadOrCreateUser() error {
-	userDir := tools.Env.DataDir + "/user"
-
-	user, err := loadUser(userDir)
+	user, err := loadUser()
 	if os.IsNotExist(err) {
-		user, err = createAccount(userDir)
+		user, err = createAccount()
 	}
 
 	if err != nil {
@@ -50,12 +49,12 @@ func LoadOrCreateUser() error {
 	return nil
 }
 
-func loadUser(userDir string) (*User, error) {
+func loadUser() (*User, error) {
 	user := User{}
 
 	// Load the registration info
 
-	rawReg, err := os.ReadFile(userDir + "/registration.json")
+	rawReg, err := os.ReadFile(tools.Env.UserDir + "/registration.json")
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +66,7 @@ func loadUser(userDir string) (*User, error) {
 
 	// Load the private key
 
-	rawKey, err := os.ReadFile(userDir + "/private.key")
+	rawKey, err := os.ReadFile(tools.Env.UserDir + "/private.key")
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +85,7 @@ func loadUser(userDir string) (*User, error) {
 	return &user, nil
 }
 
-func createAccount(userDir string) (*User, error) {
+func createAccount() (*User, error) {
 	// Create the user
 
 	privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
@@ -115,7 +114,7 @@ func createAccount(userDir string) (*User, error) {
 		return nil, err
 	}
 
-	privKeyFile, err := os.Create(userDir + "/private.key")
+	privKeyFile, err := os.Create(tools.Env.UserDir + "/private.key")
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +135,7 @@ func createAccount(userDir string) (*User, error) {
 		return nil, err
 	}
 
-	err = os.WriteFile(userDir+"/registration.json", regJSON, 0620)
+	err = os.WriteFile(tools.Env.UserDir+"/registration.json", regJSON, 0620)
 	if err != nil {
 		panic(err)
 	}

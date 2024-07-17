@@ -5,6 +5,7 @@ import "os"
 var Env struct {
 	Target      string `env:"TARGET"`
 	DataDir     string `env:"DATA_DIR"`
+	UserDir     string `env:"USER_DIR"`
 	StoreType   string `env:"STORE"`
 	AdminDomain string `env:"ADMIN_DOMAIN"`
 	AdminKey    string `env:"ADMIN_KEY"`
@@ -19,6 +20,11 @@ func LoadEnv() {
 	Env.DataDir = os.Getenv("DATA_DIR")
 	if Env.DataDir == "" {
 		Env.DataDir = "/var/lib/proxbee"
+	}
+
+	Env.UserDir = os.Getenv("USER_DIR")
+	if Env.UserDir == "" {
+		Env.UserDir = Env.DataDir + "/user"
 	}
 
 	if os.Getenv("STORE") == "sql" {
