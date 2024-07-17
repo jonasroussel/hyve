@@ -1,16 +1,21 @@
 package acme
 
 import (
+	"log"
 	"time"
 
+	"github.com/go-acme/lego/v4/certcrypto"
 	"github.com/go-acme/lego/v4/certificate"
 	"github.com/go-acme/lego/v4/lego"
 
 	"github.com/jonasroussel/proxbee/stores"
+	"github.com/jonasroussel/proxbee/tools"
 )
 
 func RegisterDomain(domain string) error {
 	config := lego.NewConfig(ActiveUser)
+
+	config.Certificate.KeyType = certcrypto.EC256
 
 	client, err := lego.NewClient(config)
 	if err != nil {
@@ -52,4 +57,22 @@ func RenewDomain(domain string) error {
 	// TODO
 
 	return nil
+}
+
+func RegisterAdminDomain() {
+	if tools.Env.AdminDomain == "" {
+		return
+	}
+
+	cert, err := stores.Active.GetCertificate(tools.Env.AdminDomain)
+	if cert != nil {
+		return
+	} else if err != nil && err != stores.ErrNotFound {
+		log.Fatal(err)
+	}
+
+	err = RegisterDomain(tools.Env.AdminDomain)
+	if err != nil {
+		log.Fatal(err)
+	}
 }

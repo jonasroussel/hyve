@@ -35,19 +35,17 @@ func (u User) GetPrivateKey() crypto.PrivateKey {
 	return u.PrivateKey
 }
 
-func LoadOrCreateUser() error {
+func LoadOrCreateUser() {
 	user, err := loadUser()
 	if os.IsNotExist(err) {
 		user, err = createAccount()
 	}
 
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
 
 	ActiveUser = *user
-
-	return nil
 }
 
 func loadUser() (*User, error) {

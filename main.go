@@ -1,8 +1,6 @@
 package main
 
 import (
-	"log"
-
 	"github.com/jonasroussel/proxbee/acme"
 	"github.com/jonasroussel/proxbee/servers"
 	"github.com/jonasroussel/proxbee/stores"
@@ -17,10 +15,7 @@ func main() {
 	stores.Load()
 
 	// Load or create Let's Encrypt user
-	err := acme.LoadOrCreateUser()
-	if err != nil {
-		log.Fatal(err)
-	}
+	acme.LoadOrCreateUser()
 
 	// Create TLS server
 	tlsListener, tlsServer, tlsHandler := servers.NewTLS()
@@ -42,6 +37,9 @@ func main() {
 
 	// Start HTTP server
 	go httpServer.Serve(httpListener)
+
+	// Register admin domain if needed
+	acme.RegisterAdminDomain()
 
 	// Wait for shutdown
 	select {}
