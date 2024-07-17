@@ -24,7 +24,7 @@ func main() {
 	httpListener, httpServer, httpHandler := servers.NewHTTP()
 
 	// Add the admin api to the TLS handler
-	servers.AdminAPI(httpHandler)
+	servers.AdminAPI(tlsHandler)
 
 	// Add the reverse proxy to the TLS handler
 	servers.ReverseProxy(tlsHandler)
