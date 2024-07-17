@@ -2,34 +2,35 @@ package main
 
 import (
 	"github.com/jonasroussel/proxbee/acme"
-	"github.com/jonasroussel/proxbee/config"
-	"github.com/jonasroussel/proxbee/server"
+	"github.com/jonasroussel/proxbee/servers"
+	"github.com/jonasroussel/proxbee/stores"
+	"github.com/jonasroussel/proxbee/tools"
 )
 
 func main() {
-	// Load config
-	config.Load()
+	// Load environment variables
+	tools.LoadEnv()
 
 	// Load store
-	config.STORE.Load()
+	stores.Load()
 
-	// Load user
-	acme.LoadUser()
+	// Load or create Let's Encrypt user
+	acme.LoadOrCreateUser()
 
 	// Create TLS server
-	tlsListener, tlsServer, tlsHandler := server.NewTLS()
+	tlsListener, tlsServer, tlsHandler := servers.NewTLS()
 
 	// Create HTTP server
-	httpListener, httpServer, httpHandler := server.NewHTTP()
+	httpListener, httpServer, httpHandler := servers.NewHTTP()
 
 	// Add the admin api to the TLS handler
-	server.AdminAPI(tlsHandler)
+	servers.AdminAPI(tlsHandler)
 
-	// Add the foward proxy to the TLS handler
-	server.ForwardProxy(tlsHandler)
+	// Add the reverse proxy to the TLS handler
+	servers.ReverseProxy(tlsHandler)
 
-	// Add the HTTP-01 challenge to the HTTP handler
-	server.HTTP01Challenge(httpHandler)
+	// Add the HTTP-01 challenge solver to the HTTP handler
+	servers.HTTP01ChallengeSolver(httpHandler)
 
 	// Start TLS server
 	go tlsServer.Serve(tlsListener)

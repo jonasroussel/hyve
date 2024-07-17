@@ -4,16 +4,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+
+	"github.com/jonasroussel/proxbee/tools"
 )
 
 type FileStore struct {
 	Directory string
 }
 
-func NewFileStore(dataDir string) FileStore {
+func NewFileStore() FileStore {
 	dir := os.Getenv("STORE_DIR")
 	if dir == "" {
-		dir = dataDir + "/certificates"
+		dir = tools.Env.DataDir + "/certificates"
 	}
 
 	return FileStore{

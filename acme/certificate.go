@@ -3,19 +3,14 @@ package acme
 import (
 	"time"
 
-	"github.com/go-acme/lego/v4/certcrypto"
 	"github.com/go-acme/lego/v4/certificate"
 	"github.com/go-acme/lego/v4/lego"
 
-	"github.com/jonasroussel/proxbee/config"
 	"github.com/jonasroussel/proxbee/stores"
 )
 
 func RegisterDomain(domain string) error {
-	options := lego.NewConfig(LetsEncryptUser)
-
-	options.CADirURL = lego.LEDirectoryProduction
-	options.Certificate.KeyType = certcrypto.EC256
+	options := lego.NewConfig(ActiveUser)
 
 	client, err := lego.NewClient(options)
 	if err != nil {
@@ -45,7 +40,7 @@ func RegisterDomain(domain string) error {
 		ExpiresAt:       time.Now().Add((90 - 1) * (24 * time.Hour)).Unix(), // -1 is just for safety
 	}
 
-	err = config.STORE.AddCertificate(rawCert.Domain, cert)
+	err = stores.Active.AddCertificate(rawCert.Domain, cert)
 	if err != nil {
 		return err
 	}
@@ -54,5 +49,7 @@ func RegisterDomain(domain string) error {
 }
 
 func RenewDomain(domain string) error {
+	// TODO
+
 	return nil
 }

@@ -1,6 +1,12 @@
 package stores
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/jonasroussel/proxbee/tools"
+)
+
+var Active Store
 
 var ErrNotFound = errors.New("certificate not found")
 
@@ -18,4 +24,15 @@ type Certificate struct {
 	Issuer          string `json:"issuer"`
 	ExpiresAt       int64  `json:"expires_at"`
 	CreatedAt       int64  `json:"created_at"`
+}
+
+func Load() {
+	switch tools.Env.StoreType {
+	case "sql":
+		Active = NewSQLStore()
+	case "file":
+		Active = NewFileStore()
+	default:
+		panic("STORE_TYPE not supported")
+	}
 }

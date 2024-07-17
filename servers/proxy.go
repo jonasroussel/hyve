@@ -1,18 +1,16 @@
-package server
+package servers
 
 import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
 
-	"github.com/jonasroussel/proxbee/config"
+	"github.com/jonasroussel/proxbee/tools"
 )
 
-var TARGET_URL, _ = url.Parse(config.TARGET)
-
-func ForwardProxy(handler *http.ServeMux) {
+func ReverseProxy(handler *http.ServeMux) {
 	handler.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Host == config.ADMIN_DOMAIN {
+		if r.URL.Host == tools.Env.AdminDomain {
 			http.NotFound(w, r)
 			return
 		}
@@ -22,11 +20,13 @@ func ForwardProxy(handler *http.ServeMux) {
 }
 
 func proxy(w http.ResponseWriter, r *http.Request) {
+	targetURL, _ := url.Parse(tools.Env.Target)
+
 	proxy := &httputil.ReverseProxy{
 		Rewrite: func(r *httputil.ProxyRequest) {
-			r.SetURL(TARGET_URL)
+			r.SetURL(targetURL)
 			r.SetXForwarded()
-			r.Out.Host = TARGET_URL.Host
+			r.Out.Host = targetURL.Host
 		},
 	}
 

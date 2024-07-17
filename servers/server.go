@@ -1,4 +1,4 @@
-package server
+package servers
 
 import (
 	"crypto/tls"
@@ -6,7 +6,7 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/jonasroussel/proxbee/config"
+	"github.com/jonasroussel/proxbee/stores"
 )
 
 func NewTLS() (net.Listener, *http.Server, *http.ServeMux) {
@@ -44,7 +44,7 @@ func getCertificate(chi *tls.ClientHelloInfo) (*tls.Certificate, error) {
 		return nil, errors.New("server name (sni) is empty")
 	}
 
-	cert, err := config.STORE.GetCertificate(chi.ServerName)
+	cert, err := stores.Active.GetCertificate(chi.ServerName)
 	if err != nil {
 		return nil, err
 	}

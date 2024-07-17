@@ -13,11 +13,10 @@ import (
 
 	"github.com/go-acme/lego/v4/lego"
 	"github.com/go-acme/lego/v4/registration"
-
-	"github.com/jonasroussel/proxbee/config"
+	"github.com/jonasroussel/proxbee/tools"
 )
 
-var LetsEncryptUser User
+var ActiveUser User
 
 type User struct {
 	Registration *registration.Resource
@@ -34,51 +33,62 @@ func (u User) GetPrivateKey() crypto.PrivateKey {
 	return u.PrivateKey
 }
 
-func LoadUser() error {
-	userDir := config.DATA_DIR + "/user"
+func LoadOrCreateUser() error {
+	userDir := tools.Env.DataDir + "/user"
 
-	rawReg, err := os.ReadFile(userDir + "/registration.json")
+	user, err := loadUser(userDir)
 	if os.IsNotExist(err) {
-		user, err := CreateAccount(userDir)
-		if err != nil {
-			return err
-		}
-
-		LetsEncryptUser = *user
-
-		return nil
-	} else if err != nil {
-		return err
-	} else {
-		user := User{}
-
-		err = json.Unmarshal(rawReg, &user.Registration)
-		if err != nil {
-			return err
-		}
-
-		rawKey, err := os.ReadFile(userDir + "/private.key")
-		if err != nil {
-			return err
-		}
-		block, _ := pem.Decode(rawKey)
-		if block == nil {
-			return errors.New("private key is not PEM encoded")
-		}
-
-		key, err := x509.ParseECPrivateKey(block.Bytes)
-		if err != nil {
-			return err
-		}
-		user.PrivateKey = *key
-
-		LetsEncryptUser = user
-
-		return nil
+		user, err = createAccount(userDir)
 	}
+
+	if err != nil {
+		return err
+	}
+
+	ActiveUser = *user
+
+	return nil
 }
 
-func CreateAccount(dataDir string) (*User, error) {
+func loadUser(userDir string) (*User, error) {
+	user := User{}
+
+	// Load the registration info
+
+	rawReg, err := os.ReadFile(userDir + "/registration.json")
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal(rawReg, &user.Registration)
+	if err != nil {
+		return nil, err
+	}
+
+	// Load the private key
+
+	rawKey, err := os.ReadFile(userDir + "/private.key")
+	if err != nil {
+		return nil, err
+	}
+
+	block, _ := pem.Decode(rawKey)
+	if block == nil {
+		return nil, errors.New("private key is not PEM encoded")
+	}
+
+	key, err := x509.ParseECPrivateKey(block.Bytes)
+	if err != nil {
+		return nil, err
+	}
+	user.PrivateKey = *key
+
+	return &user, nil
+}
+
+func createAccount(userDir string) (*User, error) {
+	// Create the user
+
 	privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
 		return nil, err
@@ -98,18 +108,20 @@ func CreateAccount(dataDir string) (*User, error) {
 	}
 	user.Registration = reg
 
+	// Save his private key
+
 	privateKeyDER, err := x509.MarshalECPrivateKey(privateKey)
 	if err != nil {
 		return nil, err
 	}
 
-	pkOutFile, err := os.Create(dataDir + "/private.key")
+	privKeyFile, err := os.Create(userDir + "/private.key")
 	if err != nil {
 		return nil, err
 	}
-	defer pkOutFile.Close()
+	defer privKeyFile.Close()
 
-	err = pem.Encode(pkOutFile, &pem.Block{
+	err = pem.Encode(privKeyFile, &pem.Block{
 		Type:  "EC PRIVATE KEY",
 		Bytes: privateKeyDER,
 	})
@@ -117,12 +129,14 @@ func CreateAccount(dataDir string) (*User, error) {
 		return nil, err
 	}
 
-	regJSON, err := json.Marshal(*reg)
+	// Save his registration info
+
+	regJSON, err := json.Marshal(reg)
 	if err != nil {
 		return nil, err
 	}
 
-	err = os.WriteFile(dataDir+"/registration.json", regJSON, 0620)
+	err = os.WriteFile(userDir+"/registration.json", regJSON, 0620)
 	if err != nil {
 		panic(err)
 	}

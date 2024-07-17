@@ -1,4 +1,4 @@
-package server
+package servers
 
 import (
 	"net/http"
@@ -7,7 +7,7 @@ import (
 	"github.com/jonasroussel/proxbee/acme"
 )
 
-func HTTP01Challenge(handler *http.ServeMux) {
+func HTTP01ChallengeSolver(handler *http.ServeMux) {
 	handler.HandleFunc("GET /.well-known/acme-challenge/{token}", func(w http.ResponseWriter, r *http.Request) {
 		token := r.PathValue("token")
 
