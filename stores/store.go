@@ -4,7 +4,7 @@ import (
 	"errors"
 	"log"
 
-	"github.com/jonasroussel/proxbee/tools"
+	"github.com/jonasroussel/hyve/tools"
 )
 
 var Active Store

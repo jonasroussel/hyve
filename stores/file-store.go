@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/jonasroussel/proxbee/tools"
+	"github.com/jonasroussel/hyve/tools"
 )
 
 type FileStore struct {

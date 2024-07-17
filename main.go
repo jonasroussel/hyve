@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/jonasroussel/proxbee/acme"
-	"github.com/jonasroussel/proxbee/servers"
-	"github.com/jonasroussel/proxbee/stores"
-	"github.com/jonasroussel/proxbee/tools"
+	"github.com/jonasroussel/hyve/acme"
+	"github.com/jonasroussel/hyve/servers"
+	"github.com/jonasroussel/hyve/stores"
+	"github.com/jonasroussel/hyve/tools"
 )
 
 func main() {

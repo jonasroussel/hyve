@@ -22,7 +22,7 @@ func LoadEnv() {
 
 	Env.DataDir = os.Getenv("DATA_DIR")
 	if Env.DataDir == "" {
-		Env.DataDir = "/var/lib/proxbee"
+		Env.DataDir = "/var/lib/hyve"
 	}
 	err := os.MkdirAll(Env.DataDir, 0700)
 	if err != nil {

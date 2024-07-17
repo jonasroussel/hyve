@@ -65,7 +65,7 @@ func (store SQLStore) AddCertificate(sni string, cert Certificate) error {
 		return nil
 	}
 
-	query := "INSERT INTO proxbee_certificates (sni, certificate, private_key, issuer, expires_at, created_at) VALUES (?, ?, ?, ?, ?, ?)"
+	query := "INSERT INTO hyve_certificates (sni, certificate, private_key, issuer, expires_at, created_at) VALUES (?, ?, ?, ?, ?, ?)"
 	_, err := store.db.Exec(query, sni, cert.CertificateData, cert.PrivateKeyData, cert.Issuer, cert.ExpiresAt, cert.CreatedAt)
 	if err != nil {
 		return err
@@ -75,7 +75,7 @@ func (store SQLStore) AddCertificate(sni string, cert Certificate) error {
 }
 
 func (store SQLStore) GetCertificate(sni string) (*Certificate, error) {
-	query := "SELECT certificate, private_key, issuer, expires_at, created_at FROM proxbee_certificates WHERE sni = ?"
+	query := "SELECT certificate, private_key, issuer, expires_at, created_at FROM hyve_certificates WHERE sni = ?"
 	row := store.db.QueryRow(query, sni)
 
 	var cert Certificate
@@ -116,7 +116,7 @@ func (store SQLStore) UpdateCertificate(sni string, cert Certificate) error {
 
 	values = append(values, sni)
 
-	query := fmt.Sprintf("UPDATE proxbee_certificates SET %s WHERE sni = ?", strings.Join(fields, ", "))
+	query := fmt.Sprintf("UPDATE hyve_certificates SET %s WHERE sni = ?", strings.Join(fields, ", "))
 	_, err := store.db.Exec(query, values...)
 	if err != nil {
 		return err
@@ -126,7 +126,7 @@ func (store SQLStore) UpdateCertificate(sni string, cert Certificate) error {
 }
 
 func (store SQLStore) RemoveCertificate(sni string) error {
-	query := "DELETE FROM proxbee_certificates WHERE sni = ?"
+	query := "DELETE FROM hyve_certificates WHERE sni = ?"
 	_, err := store.db.Exec(query, sni)
 	if err != nil {
 		return err
@@ -140,7 +140,7 @@ func (store SQLStore) RemoveCertificate(sni string) error {
 //---------//
 
 func existsInDB(sni string, db *sql.DB) bool {
-	query := "SELECT sni FROM proxbee_certificates WHERE sni = ?"
+	query := "SELECT sni FROM hyve_certificates WHERE sni = ?"
 
 	var result sql.NullString
 	err := db.QueryRow(query, sni).Scan(&result)
@@ -153,7 +153,7 @@ func existsInDB(sni string, db *sql.DB) bool {
 }
 
 func createTable(db *sql.DB) error {
-	query := `CREATE TABLE IF NOT EXISTS proxbee_certificates (
+	query := `CREATE TABLE IF NOT EXISTS hyve_certificates (
 		sni VARCHAR(255) PRIMARY KEY,
 		certificate TEXT,
 		private_key TEXT,

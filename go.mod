@@ -1,4 +1,4 @@
-module github.com/jonasroussel/proxbee
+module github.com/jonasroussel/hyve
 
 go 1.22.4
 

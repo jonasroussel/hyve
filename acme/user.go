@@ -15,7 +15,7 @@ import (
 	"github.com/go-acme/lego/v4/lego"
 	"github.com/go-acme/lego/v4/registration"
 
-	"github.com/jonasroussel/proxbee/tools"
+	"github.com/jonasroussel/hyve/tools"
 )
 
 var ActiveUser User

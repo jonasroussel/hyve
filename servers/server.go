@@ -7,7 +7,7 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/jonasroussel/proxbee/stores"
+	"github.com/jonasroussel/hyve/stores"
 )
 
 func NewTLS() (net.Listener, *http.Server, *http.ServeMux) {

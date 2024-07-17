@@ -8,8 +8,8 @@ import (
 	"github.com/go-acme/lego/v4/certificate"
 	"github.com/go-acme/lego/v4/lego"
 
-	"github.com/jonasroussel/proxbee/stores"
-	"github.com/jonasroussel/proxbee/tools"
+	"github.com/jonasroussel/hyve/stores"
+	"github.com/jonasroussel/hyve/tools"
 )
 
 func RegisterDomain(domain string) error {

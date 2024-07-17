@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/jonasroussel/proxbee/acme"
+	"github.com/jonasroussel/hyve/acme"
 )
 
 func HTTP01ChallengeSolver(handler *http.ServeMux) {

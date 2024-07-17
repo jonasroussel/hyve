@@ -5,7 +5,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 
-	"github.com/jonasroussel/proxbee/tools"
+	"github.com/jonasroussel/hyve/tools"
 )
 
 func ReverseProxy(handler *http.ServeMux) {
