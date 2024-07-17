@@ -2,6 +2,7 @@ package servers
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/jonasroussel/proxbee/acme"
 	"github.com/jonasroussel/proxbee/stores"
@@ -20,6 +21,11 @@ func AdminAPI(handler *http.ServeMux) {
 	handler.HandleFunc("POST /api/add", func(w http.ResponseWriter, r *http.Request) {
 		if r.TLS.ServerName != tools.Env.AdminDomain {
 			proxy(w, r)
+			return
+		}
+
+		if !verifyAdminKey(r) {
+			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 
@@ -55,6 +61,11 @@ func AdminAPI(handler *http.ServeMux) {
 			return
 		}
 
+		if !verifyAdminKey(r) {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
 		// TODO
 
 		w.Write([]byte("TODO"))
@@ -63,6 +74,11 @@ func AdminAPI(handler *http.ServeMux) {
 	handler.HandleFunc("POST /api/remove", func(w http.ResponseWriter, r *http.Request) {
 		if r.TLS.ServerName != tools.Env.AdminDomain {
 			proxy(w, r)
+			return
+		}
+
+		if !verifyAdminKey(r) {
+			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 
@@ -81,4 +97,22 @@ func AdminAPI(handler *http.ServeMux) {
 
 		w.Write([]byte("OK"))
 	})
+}
+
+func verifyAdminKey(r *http.Request) bool {
+	authHeader := r.Header.Get("Authorization")
+	if authHeader == "" {
+		return false
+	}
+
+	parts := strings.Split(strings.Trim(authHeader, " "), " ")
+	if len(parts) != 2 {
+		return false
+	}
+
+	if parts[0] != "Bearer" {
+		return false
+	}
+
+	return parts[1] == tools.Env.AdminKey
 }

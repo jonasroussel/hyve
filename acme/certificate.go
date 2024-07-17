@@ -10,9 +10,9 @@ import (
 )
 
 func RegisterDomain(domain string) error {
-	options := lego.NewConfig(ActiveUser)
+	config := lego.NewConfig(ActiveUser)
 
-	client, err := lego.NewClient(options)
+	client, err := lego.NewClient(config)
 	if err != nil {
 		return err
 	}

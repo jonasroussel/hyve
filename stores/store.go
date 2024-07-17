@@ -2,6 +2,7 @@ package stores
 
 import (
 	"errors"
+	"log"
 
 	"github.com/jonasroussel/proxbee/tools"
 )
@@ -33,6 +34,6 @@ func Load() {
 	case "file":
 		Active = NewFileStore()
 	default:
-		panic("STORE_TYPE not supported")
+		log.Fatal("STORE_TYPE not supported")
 	}
 }

@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"encoding/pem"
 	"errors"
+	"log"
 	"os"
 
 	"github.com/go-acme/lego/v4/lego"
@@ -21,7 +22,7 @@ var ActiveUser User
 
 type User struct {
 	Registration *registration.Resource
-	PrivateKey   ecdsa.PrivateKey
+	PrivateKey   *ecdsa.PrivateKey
 }
 
 func (u User) GetEmail() string {
@@ -80,7 +81,7 @@ func loadUser() (*User, error) {
 	if err != nil {
 		return nil, err
 	}
-	user.PrivateKey = *key
+	user.PrivateKey = key
 
 	return &user, nil
 }
@@ -93,7 +94,7 @@ func createAccount() (*User, error) {
 		return nil, err
 	}
 
-	user := User{PrivateKey: *privateKey}
+	user := User{PrivateKey: privateKey}
 	config := lego.NewConfig(user)
 
 	client, err := lego.NewClient(config)
@@ -137,7 +138,7 @@ func createAccount() (*User, error) {
 
 	err = os.WriteFile(tools.Env.UserDir+"/registration.json", regJSON, 0620)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	return &user, nil

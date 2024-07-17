@@ -3,6 +3,7 @@ package stores
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"os"
 	"slices"
 	"strings"
@@ -26,7 +27,7 @@ func NewSQLStore() *SQLStore {
 
 	dataSource := os.Getenv("STORE_DATA_SOURCE")
 	if dataSource == "" {
-		panic("STORE_DATA_SOURCE environment variable must be set when using STORE=sql")
+		log.Fatal("STORE_DATA_SOURCE environment variable must be set when using STORE=sql")
 	}
 
 	return &SQLStore{
@@ -37,7 +38,7 @@ func NewSQLStore() *SQLStore {
 
 func (store *SQLStore) Load() error {
 	if !slices.Contains([]string{"sqlite3", "postgres"}, store.Driver) {
-		panic("SQL driver not supported")
+		log.Fatal("SQL driver not supported")
 	}
 
 	conn, err := sql.Open(store.Driver, store.DataSource)

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+
 	"github.com/jonasroussel/proxbee/acme"
 	"github.com/jonasroussel/proxbee/servers"
 	"github.com/jonasroussel/proxbee/stores"
@@ -15,7 +17,10 @@ func main() {
 	stores.Load()
 
 	// Load or create Let's Encrypt user
-	acme.LoadOrCreateUser()
+	err := acme.LoadOrCreateUser()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Create TLS server
 	tlsListener, tlsServer, tlsHandler := servers.NewTLS()
@@ -24,7 +29,7 @@ func main() {
 	httpListener, httpServer, httpHandler := servers.NewHTTP()
 
 	// Add the admin api to the TLS handler
-	servers.AdminAPI(tlsHandler)
+	servers.AdminAPI(httpHandler)
 
 	// Add the reverse proxy to the TLS handler
 	servers.ReverseProxy(tlsHandler)

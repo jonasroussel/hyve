@@ -1,6 +1,6 @@
 package acme
 
-var HTTP01Provider = HTTP01ChallengesProvider{}
+var HTTP01Provider = HTTP01ChallengesProvider{challenges: make(map[string]HTTP01ChallengeData)}
 
 type HTTP01ChallengeData struct {
 	Domain  string
@@ -12,7 +12,7 @@ type HTTP01ChallengesProvider struct {
 	challenges map[string]HTTP01ChallengeData
 }
 
-func (p HTTP01ChallengesProvider) Present(domain string, token string, keyAuth string) error {
+func (p HTTP01ChallengesProvider) Present(domain, token, keyAuth string) error {
 	p.challenges[token] = HTTP01ChallengeData{
 		Domain:  domain,
 		Token:   token,
@@ -22,7 +22,7 @@ func (p HTTP01ChallengesProvider) Present(domain string, token string, keyAuth s
 	return nil
 }
 
-func (p HTTP01ChallengesProvider) CleanUp(domain string, token string, _ string) error {
+func (p HTTP01ChallengesProvider) CleanUp(domain, token, keyAuth string) error {
 	delete(p.challenges, token)
 	return nil
 }

@@ -3,6 +3,7 @@ package servers
 import (
 	"crypto/tls"
 	"errors"
+	"log"
 	"net"
 	"net/http"
 
@@ -14,10 +15,9 @@ func NewTLS() (net.Listener, *http.Server, *http.ServeMux) {
 
 	listener, err := tls.Listen("tcp", ":443", &tls.Config{
 		GetCertificate: getCertificate,
-		NextProtos:     []string{"h2", "http/1.1"},
 	})
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	server := &http.Server{Handler: handler}
@@ -30,7 +30,7 @@ func NewHTTP() (net.Listener, *http.Server, *http.ServeMux) {
 
 	listener, err := net.Listen("tcp", ":80")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	server := &http.Server{Handler: handler}

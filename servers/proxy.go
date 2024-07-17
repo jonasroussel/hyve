@@ -10,7 +10,7 @@ import (
 
 func ReverseProxy(handler *http.ServeMux) {
 	handler.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Host == tools.Env.AdminDomain {
+		if r.TLS.ServerName != "" && r.TLS.ServerName == tools.Env.AdminDomain {
 			http.NotFound(w, r)
 			return
 		}
