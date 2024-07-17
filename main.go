@@ -14,6 +14,9 @@ func main() {
 	// Load store
 	stores.Load()
 
+	// Init lego
+	acme.InitLego()
+
 	// Load or create Let's Encrypt user
 	acme.LoadOrCreateUser()
 

@@ -12,27 +12,33 @@ import (
 	"github.com/jonasroussel/hyve/tools"
 )
 
-func RegisterDomain(domain string) error {
+var legoClient *lego.Client
+
+func InitLego() {
 	config := lego.NewConfig(ActiveUser)
 
 	config.Certificate.KeyType = certcrypto.EC256
 
 	client, err := lego.NewClient(config)
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
 
 	err = client.Challenge.SetHTTP01Provider(HTTP01Provider)
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
 
+	legoClient = client
+}
+
+func RegisterDomain(domain string) error {
 	req := certificate.ObtainRequest{
 		Domains: []string{domain},
 		Bundle:  true,
 	}
 
-	rawCert, err := client.Certificate.Obtain(req)
+	rawCert, err := legoClient.Certificate.Obtain(req)
 	if err != nil {
 		return err
 	}
@@ -54,7 +60,37 @@ func RegisterDomain(domain string) error {
 }
 
 func RenewDomain(domain string) error {
-	// TODO
+	cert, err := stores.Active.GetCertificate(domain)
+	if err != nil {
+		return err
+	}
+
+	res := certificate.Resource{
+		Domain:        domain,
+		CertURL:       cert.Issuer,
+		CertStableURL: cert.Issuer,
+		Certificate:   cert.CertificateData,
+	}
+
+	rawCert, err := legoClient.Certificate.RenewWithOptions(res, &certificate.RenewOptions{
+		Bundle: true,
+	})
+	if err != nil {
+		return err
+	}
+
+	cert = &stores.Certificate{
+		CertificateData: rawCert.Certificate,
+		PrivateKeyData:  rawCert.PrivateKey,
+		Issuer:          rawCert.CertStableURL,
+		CreatedAt:       time.Now().Unix(),
+		ExpiresAt:       time.Now().Add((90 - 1) * (24 * time.Hour)).Unix(), // -1 is just for safety
+	}
+
+	err = stores.Active.UpdateCertificate(domain, *cert)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

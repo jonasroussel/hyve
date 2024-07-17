@@ -36,6 +36,11 @@ func AdminAPI(handler *http.ServeMux) {
 			return
 		}
 
+		if data.Domain == "" {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
 		cert, err := stores.Active.GetCertificate(data.Domain)
 		if err != nil && err != stores.ErrNotFound {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -66,9 +71,25 @@ func AdminAPI(handler *http.ServeMux) {
 			return
 		}
 
-		// TODO
+		var data BodyData
+		err := tools.ParseBody(r.Body, &data)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
 
-		w.Write([]byte("TODO"))
+		if data.Domain == "" {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		err = acme.RenewDomain(data.Domain)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		w.Write([]byte("OK"))
 	})
 
 	handler.HandleFunc("POST /api/remove", func(w http.ResponseWriter, r *http.Request) {
@@ -85,6 +106,11 @@ func AdminAPI(handler *http.ServeMux) {
 		var data BodyData
 		err := tools.ParseBody(r.Body, &data)
 		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		if data.Domain == "" {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
