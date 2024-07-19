@@ -1,7 +1,6 @@
 package tools
 
 import (
-	"log"
 	"os"
 )
 
@@ -15,31 +14,33 @@ var Env struct {
 }
 
 func LoadEnv() {
-	Env.Target = os.Getenv("TARGET")
-	if Env.Target == "" {
-		log.Fatal("TARGET environment variable is not set")
-	}
+	// Env.Target = os.Getenv("TARGET")
+	// if Env.Target == "" {
+	// 	log.Fatal("TARGET environment variable is not set")
+	// }
 
-	Env.DataDir = os.Getenv("DATA_DIR")
-	if Env.DataDir == "" {
-		Env.DataDir = "/var/lib/hyve"
-	}
-	err := os.MkdirAll(Env.DataDir, 0700)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// Env.DataDir = os.Getenv("DATA_DIR")
+	// if Env.DataDir == "" {
+	// 	Env.DataDir = "/var/lib/hyve"
+	// }
+	// err := os.MkdirAll(Env.DataDir, 0700)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
-	Env.UserDir = os.Getenv("USER_DIR")
-	if Env.UserDir == "" {
-		Env.UserDir = Env.DataDir + "/user"
-	}
-	err = os.MkdirAll(Env.UserDir, 0700)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// Env.UserDir = os.Getenv("USER_DIR")
+	// if Env.UserDir == "" {
+	// 	Env.UserDir = Env.DataDir + "/user"
+	// }
+	// err = os.MkdirAll(Env.UserDir, 0700)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	if os.Getenv("STORE") == "sql" {
 		Env.StoreType = "sql"
+	} else if os.Getenv("STORE") == "mongo" {
+		Env.StoreType = "mongo"
 	} else {
 		Env.StoreType = "file"
 	}
@@ -47,7 +48,7 @@ func LoadEnv() {
 	Env.AdminDomain = os.Getenv("ADMIN_DOMAIN")
 	Env.AdminKey = os.Getenv("ADMIN_KEY")
 
-	if Env.AdminDomain == "" || Env.AdminKey == "" {
-		log.Println("\033[33mWARNING: ADMIN(s) environment variables are not set, admin API will not be available\033[0m")
-	}
+	// if Env.AdminDomain == "" || Env.AdminKey == "" {
+	// 	log.Println("\033[33mWARNING: ADMIN(s) environment variables are not set, admin API will not be available\033[0m")
+	// }
 }

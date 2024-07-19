@@ -45,14 +45,15 @@ func (store *SQLStore) Load() error {
 	if err != nil {
 		return err
 	}
-	store.db = conn
 
 	err = conn.Ping()
 	if err != nil {
 		return err
 	}
 
-	err = createTable(store.db)
+	store.db = conn
+
+	err = createSQLTable(store.db)
 	if err != nil {
 		return err
 	}
@@ -61,7 +62,7 @@ func (store *SQLStore) Load() error {
 }
 
 func (store SQLStore) AddCertificate(domain string, cert Certificate) error {
-	if existsInDB(domain, store.db) {
+	if existsInSQLTable(domain, store.db) {
 		return nil
 	}
 
@@ -160,7 +161,7 @@ func (store SQLStore) RemoveCertificate(domain string) error {
 // Helpers //
 //---------//
 
-func existsInDB(domain string, db *sql.DB) bool {
+func existsInSQLTable(domain string, db *sql.DB) bool {
 	query := "SELECT domain FROM hyve_certificates WHERE domain = ?"
 
 	var result sql.NullString
@@ -173,7 +174,7 @@ func existsInDB(domain string, db *sql.DB) bool {
 	return result.Valid
 }
 
-func createTable(db *sql.DB) error {
+func createSQLTable(db *sql.DB) error {
 	query := `CREATE TABLE IF NOT EXISTS hyve_certificates (
 		domain VARCHAR(255) PRIMARY KEY,
 		certificate TEXT,

@@ -21,18 +21,20 @@ type Store interface {
 }
 
 type Certificate struct {
-	Domain          string `json:"domain"`
-	CertificateData []byte
-	PrivateKeyData  []byte
-	Issuer          string `json:"issuer"`
-	ExpiresAt       int64  `json:"expires_at"`
-	CreatedAt       int64  `json:"created_at"`
+	Domain          string `json:"domain" bson:"domain"`
+	CertificateData []byte `json:"-" bson:"certificate"`
+	PrivateKeyData  []byte `json:"-" bson:"private_key"`
+	Issuer          string `json:"issuer" bson:"issuer"`
+	ExpiresAt       int64  `json:"expires_at" bson:"expires_at"`
+	CreatedAt       int64  `json:"created_at" bson:"created_at"`
 }
 
 func Load() {
 	switch tools.Env.StoreType {
 	case "sql":
 		Active = NewSQLStore()
+	case "mongo":
+		Active = NewMongoStore()
 	case "file":
 		Active = NewFileStore()
 	default:
