@@ -60,13 +60,13 @@ func (store *SQLStore) Load() error {
 	return nil
 }
 
-func (store SQLStore) AddCertificate(sni string, cert Certificate) error {
-	if existsInDB(sni, store.db) {
+func (store SQLStore) AddCertificate(domain string, cert Certificate) error {
+	if existsInDB(domain, store.db) {
 		return nil
 	}
 
-	query := "INSERT INTO hyve_certificates (sni, certificate, private_key, issuer, expires_at, created_at) VALUES (?, ?, ?, ?, ?, ?)"
-	_, err := store.db.Exec(query, sni, cert.CertificateData, cert.PrivateKeyData, cert.Issuer, cert.ExpiresAt, cert.CreatedAt)
+	query := "INSERT INTO hyve_certificates (domain, certificate, private_key, issuer, expires_at, created_at) VALUES (?, ?, ?, ?, ?, ?)"
+	_, err := store.db.Exec(query, domain, cert.CertificateData, cert.PrivateKeyData, cert.Issuer, cert.ExpiresAt, cert.CreatedAt)
 	if err != nil {
 		return err
 	}
@@ -74,12 +74,12 @@ func (store SQLStore) AddCertificate(sni string, cert Certificate) error {
 	return nil
 }
 
-func (store SQLStore) GetCertificate(sni string) (*Certificate, error) {
-	query := "SELECT certificate, private_key, issuer, expires_at, created_at FROM hyve_certificates WHERE sni = ?"
-	row := store.db.QueryRow(query, sni)
+func (store SQLStore) GetCertificate(domain string) (*Certificate, error) {
+	query := "SELECT domain, certificate, private_key, issuer, expires_at, created_at FROM hyve_certificates WHERE domain = ?"
+	row := store.db.QueryRow(query, domain)
 
 	var cert Certificate
-	err := row.Scan(&cert.CertificateData, &cert.PrivateKeyData, &cert.Issuer, &cert.ExpiresAt, &cert.CreatedAt)
+	err := row.Scan(&cert.Domain, &cert.CertificateData, &cert.PrivateKeyData, &cert.Issuer, &cert.ExpiresAt, &cert.CreatedAt)
 	if err == sql.ErrNoRows {
 		return nil, ErrNotFound
 	} else if err != nil {
@@ -89,7 +89,28 @@ func (store SQLStore) GetCertificate(sni string) (*Certificate, error) {
 	return &cert, nil
 }
 
-func (store SQLStore) UpdateCertificate(sni string, cert Certificate) error {
+func (store SQLStore) GetAllCertificates(exp int64) []Certificate {
+	query := "SELECT domain, certificate, private_key, issuer, expires_at, created_at FROM hyve_certificates WHERE expires_at <= ?"
+	rows, err := store.db.Query(query, exp)
+	if err != nil {
+		return nil
+	}
+
+	var certs []Certificate
+	for rows.Next() {
+		var cert Certificate
+		err = rows.Scan(&cert.Domain, &cert.CertificateData, &cert.PrivateKeyData, &cert.Issuer, &cert.ExpiresAt, &cert.CreatedAt)
+		if err != nil {
+			return nil
+		}
+
+		certs = append(certs, cert)
+	}
+
+	return certs
+}
+
+func (store SQLStore) UpdateCertificate(domain string, cert Certificate) error {
 	fields := []string{}
 	values := []any{}
 
@@ -114,9 +135,9 @@ func (store SQLStore) UpdateCertificate(sni string, cert Certificate) error {
 		values = append(values, cert.CreatedAt)
 	}
 
-	values = append(values, sni)
+	values = append(values, domain)
 
-	query := fmt.Sprintf("UPDATE hyve_certificates SET %s WHERE sni = ?", strings.Join(fields, ", "))
+	query := fmt.Sprintf("UPDATE hyve_certificates SET %s WHERE domain = ?", strings.Join(fields, ", "))
 	_, err := store.db.Exec(query, values...)
 	if err != nil {
 		return err
@@ -125,9 +146,9 @@ func (store SQLStore) UpdateCertificate(sni string, cert Certificate) error {
 	return nil
 }
 
-func (store SQLStore) RemoveCertificate(sni string) error {
-	query := "DELETE FROM hyve_certificates WHERE sni = ?"
-	_, err := store.db.Exec(query, sni)
+func (store SQLStore) RemoveCertificate(domain string) error {
+	query := "DELETE FROM hyve_certificates WHERE domain = ?"
+	_, err := store.db.Exec(query, domain)
 	if err != nil {
 		return err
 	}
@@ -139,11 +160,11 @@ func (store SQLStore) RemoveCertificate(sni string) error {
 // Helpers //
 //---------//
 
-func existsInDB(sni string, db *sql.DB) bool {
-	query := "SELECT sni FROM hyve_certificates WHERE sni = ?"
+func existsInDB(domain string, db *sql.DB) bool {
+	query := "SELECT domain FROM hyve_certificates WHERE domain = ?"
 
 	var result sql.NullString
-	err := db.QueryRow(query, sni).Scan(&result)
+	err := db.QueryRow(query, domain).Scan(&result)
 
 	if err == sql.ErrNoRows {
 		return false
@@ -154,7 +175,7 @@ func existsInDB(sni string, db *sql.DB) bool {
 
 func createTable(db *sql.DB) error {
 	query := `CREATE TABLE IF NOT EXISTS hyve_certificates (
-		sni VARCHAR(255) PRIMARY KEY,
+		domain VARCHAR(255) PRIMARY KEY,
 		certificate TEXT,
 		private_key TEXT,
 		issuer VARCHAR(255),

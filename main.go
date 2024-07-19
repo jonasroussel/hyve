@@ -44,6 +44,9 @@ func main() {
 	// Register admin domain if needed
 	acme.RegisterAdminDomain()
 
+	// Activate auto renew
+	acme.ActivateAutoRenew()
+
 	// Wait for shutdown
 	select {}
 }

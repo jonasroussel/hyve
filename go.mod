@@ -12,6 +12,7 @@ require (
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/go-jose/go-jose/v4 v4.0.2 // indirect
 	github.com/miekg/dns v1.1.61 // indirect
+	github.com/robfig/cron/v3 v3.0.1 // indirect
 	golang.org/x/crypto v0.25.0 // indirect
 	golang.org/x/mod v0.19.0 // indirect
 	golang.org/x/net v0.27.0 // indirect

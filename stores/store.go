@@ -13,13 +13,15 @@ var ErrNotFound = errors.New("certificate not found")
 
 type Store interface {
 	Load() error
-	AddCertificate(sni string, cert Certificate) error
-	GetCertificate(sni string) (*Certificate, error)
-	UpdateCertificate(sni string, cert Certificate) error
-	RemoveCertificate(sni string) error
+	AddCertificate(domain string, cert Certificate) error
+	GetCertificate(domain string) (*Certificate, error)
+	GetAllCertificates(exp int64) []Certificate
+	UpdateCertificate(domain string, cert Certificate) error
+	RemoveCertificate(domain string) error
 }
 
 type Certificate struct {
+	Domain          string `json:"domain"`
 	CertificateData []byte
 	PrivateKeyData  []byte
 	Issuer          string `json:"issuer"`
