@@ -35,6 +35,9 @@ func main() {
 	// Add the HTTP-01 challenge solver to the HTTP handler
 	servers.HTTP01ChallengeSolver(httpHandler)
 
+	// Add the redirect to HTTPS handler
+	servers.RedirectToHTTPS(httpHandler)
+
 	// Start TLS server
 	go tlsServer.Serve(tlsListener)
 
