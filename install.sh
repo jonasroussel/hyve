@@ -20,8 +20,8 @@ fi
 # Extract the binary
 tar -xzf hyve.tar.gz
 
-# Remove the archive
-rm -f hyve.tar.gz
+# Remove the archive, the LICENSE and the README
+rm -f hyve.tar.gz LICENSE README.md
 
 # Make the binary executable
 chmod +x hyve
