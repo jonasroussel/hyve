@@ -14,11 +14,11 @@ func main() {
 	// Load store
 	stores.Load()
 
-	// Init lego
-	acme.InitLego()
-
 	// Load or create Let's Encrypt user
 	acme.LoadOrCreateUser()
+
+	// Init lego
+	acme.InitLego()
 
 	// Create TLS server
 	tlsListener, tlsServer, tlsHandler := servers.NewTLS()

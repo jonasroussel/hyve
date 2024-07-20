@@ -64,6 +64,10 @@ docker_manifests:
     image_templates:
       - "ghcr.io/jonasroussel/hyve:{{ .Version }}-amd64"
       - "ghcr.io/jonasroussel/hyve:{{ .Version }}-arm64"
+  - name_template: "ghcr.io/jonasroussel/hyve:latest"
+    image_templates:
+      - "ghcr.io/jonasroussel/hyve:{{ .Version }}-amd64"
+      - "ghcr.io/jonasroussel/hyve:{{ .Version }}-arm64"
 
 release:
   github:
@@ -76,5 +80,5 @@ changelog:
   sort: asc
   filters:
     exclude:
-      - '^misc(\w*):'
+      - '^misc\(\w*\):'
       - '^\w+\s+' # a hack to remove commit messages without colons thus don't correspond to a package
