@@ -1,0 +1,80 @@
+version: 2
+
+before:
+  hooks:
+    - go mod vendor
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    main: main.go
+    binary: hyve
+    goos:
+      - darwin
+      - linux
+      - windows
+      - freebsd
+    goarch:
+      - amd64
+      - arm
+      - arm64
+      - s390x
+      - ppc64le
+      - riscv64
+    goarm:
+      - "5"
+      - "6"
+      - "7"
+
+archives:
+  - format: tar.gz
+    # this name template makes the OS and Arch compatible with the results of `uname`.
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    # use zip for windows archives
+    format_overrides:
+      - goos: windows
+        format: zip
+
+checksum:
+  algorithm: sha512
+
+dockers:
+  - image_templates:
+      - "jonasroussel/hyve:{{ .Version }}-amd64"
+    use: buildx
+    dockerfile: ./Dockerfile.ci
+    build_flag_templates:
+      - "--platform=linux/amd64"
+  - image_templates:
+      - "jonasroussel/hyve:{{ .Version }}-arm64"
+    use: buildx
+    dockerfile: ./Dockerfile.ci
+    build_flag_templates:
+      - "--platform=linux/arm64"
+    goarch: arm64
+
+docker_manifests:
+  - name_template: "jonasroussel/hyve:{{ .Version }}"
+    image_templates:
+      - "jonasroussel/hyve:{{ .Version }}-amd64"
+      - "jonasroussel/hyve:{{ .Version }}-arm64"
+
+release:
+  github:
+    owner: jonasroussel
+    name: hyve
+  draft: true
+  prerelease: auto
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^misc(\w*):'
+      - '^\w+\s+' # a hack to remove commit messages without colons thus don't correspond to a package

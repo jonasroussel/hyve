@@ -1,0 +1,5 @@
+FROM scratch
+
+COPY ./hyve /bin/hyve
+
+ENTRYPOINT ["/bin/hyve"]

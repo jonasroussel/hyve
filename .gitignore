@@ -1,0 +1,15 @@
+# MacOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+$RECYCLE.BIN/
+
+# Linux
+.Trash-*
+
+# Goreleaser build
+dist/
+vendor/
