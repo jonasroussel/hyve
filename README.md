@@ -18,16 +18,8 @@ Originally created to facilitate the implementation of user-added domains in any
 
 ### On Linux with systemd
 
-#### via wget:
-
 ```shell
 wget -O- 'https://raw.githubusercontent.com/jonasroussel/hyve/main/install.sh' | sh
-```
-
-#### via curl:
-
-```shell
-curl -sSf 'https://raw.githubusercontent.com/jonasroussel/hyve/main/install.sh' | sh
 ```
 
 ### With Docker
