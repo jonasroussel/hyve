@@ -60,38 +60,6 @@ func AdminAPI(handler *http.ServeMux) {
 		w.Write([]byte("OK"))
 	})
 
-	handler.HandleFunc("POST /api/renew", func(w http.ResponseWriter, r *http.Request) {
-		if r.TLS.ServerName != tools.Env.AdminDomain {
-			proxy(w, r)
-			return
-		}
-
-		if !verifyAdminKey(r) {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-
-		var data BodyData
-		err := tools.ParseBody(r.Body, &data)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-
-		if data.Domain == "" {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-
-		err = acme.RenewDomain(data.Domain)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		w.Write([]byte("OK"))
-	})
-
 	handler.HandleFunc("POST /api/remove", func(w http.ResponseWriter, r *http.Request) {
 		if r.TLS.ServerName != tools.Env.AdminDomain {
 			proxy(w, r)
