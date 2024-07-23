@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"slices"
 	"strings"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
@@ -45,6 +47,12 @@ func (store *SQLStore) Load() error {
 	conn, err := sql.Open(store.Driver, store.DataSource)
 	if err != nil {
 		return err
+	}
+
+	if store.Driver == "mysql" {
+		conn.SetConnMaxLifetime(time.Minute * 3)
+		conn.SetMaxOpenConns(runtime.NumCPU() * 10)
+		conn.SetMaxIdleConns(runtime.NumCPU() * 10)
 	}
 
 	err = conn.Ping()
