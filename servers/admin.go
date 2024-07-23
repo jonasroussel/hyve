@@ -41,6 +41,12 @@ func AdminAPI(handler *http.ServeMux) {
 			return
 		}
 
+		if !tools.IsDNSValid(data.Domain) {
+			w.WriteHeader(http.StatusConflict)
+			w.Write([]byte("DOMAIN_NOT_CONFIGURED"))
+			return
+		}
+
 		cert, err := stores.Active.GetCertificate(data.Domain)
 		if err != nil && err != stores.ErrNotFound {
 			w.WriteHeader(http.StatusInternalServerError)
