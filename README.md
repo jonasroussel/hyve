@@ -66,11 +66,11 @@ If you are using the systemd install, you will find the configuration environmen
 
 ### Store methods
 
-| Method  | Description                                   | Environment variables                                         |
-| ------- | --------------------------------------------- | ------------------------------------------------------------- |
-| `file`  | Stores certificates in the system file system | `STORE_DIR`                                                   |
-| `sql`   | Stores certificates in a SQL database         | `STORE_DRIVER` = (`sqlite3`, `postgres`), `STORE_DATA_SOURCE` |
-| `mongo` | Stores certificates in a MongoDB database     | `STORE_CONNECTION_URI`, `STORE_DATABASE_NAME`                 |
+| Method  | Description                                   | Environment variables                                                  |
+| ------- | --------------------------------------------- | ---------------------------------------------------------------------- |
+| `file`  | Stores certificates in the system file system | `STORE_DIR`                                                            |
+| `sql`   | Stores certificates in a SQL database         | `STORE_DRIVER` = (`sqlite3`, `postgres`, `mysql`), `STORE_DATA_SOURCE` |
+| `mongo` | Stores certificates in a MongoDB database     | `STORE_CONNECTION_URI`, `STORE_DATABASE_NAME`                          |
 
 ## Admin API
 

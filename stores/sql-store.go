@@ -8,6 +8,7 @@ import (
 	"slices"
 	"strings"
 
+	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -37,7 +38,7 @@ func NewSQLStore() *SQLStore {
 }
 
 func (store *SQLStore) Load() error {
-	if !slices.Contains([]string{"sqlite3", "postgres"}, store.Driver) {
+	if !slices.Contains([]string{"sqlite3", "postgres", "mysql"}, store.Driver) {
 		log.Fatal("SQL driver not supported")
 	}
 
