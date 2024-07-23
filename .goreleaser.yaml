@@ -80,5 +80,4 @@ changelog:
   sort: asc
   filters:
     exclude:
-      - '^misc\(\w*\):'
       - '^\w+\s+' # a hack to remove commit messages without colons thus don't correspond to a package
