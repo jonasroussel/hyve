@@ -84,10 +84,9 @@ Authorization: Bearer <ADMIN_KEY>
 
 ### POST /api/add
 
-Add a new domain to the proxy.
+Add a new domain to the proxy. (body in JSON)
 
 ```json
-// body in JSON
 {
   "domain": "example.com"
 }
@@ -97,10 +96,9 @@ The response will be emitted with a code of `200` when the domain is added and t
 
 ### POST /api/remove
 
-Remove a domain from the proxy.
+Remove a domain from the proxy. (body in JSON)
 
 ```json
-// body in JSON
 {
   "domain": "example.com"
 }
