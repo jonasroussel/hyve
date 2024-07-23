@@ -1,5 +1,10 @@
-FROM scratch
+FROM scratch:latest
 
 COPY ./hyve /bin/hyve
+
+ENV DATA_DIR=/var/lib/hyve
+ENV USER_DIR=${DATA_DIR}/user
+ENV STORE=file
+ENV STORE_DIR=${DATA_DIR}/certificates
 
 ENTRYPOINT ["/bin/hyve"]

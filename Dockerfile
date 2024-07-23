@@ -6,7 +6,7 @@ COPY . .
 
 RUN go build -o /build/hyve .
 
-FROM alpine:latest
+FROM scratch:latest
 
 COPY --from=builder /build/hyve /usr/bin/hyve
 
