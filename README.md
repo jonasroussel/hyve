@@ -37,7 +37,7 @@ docker run --name hyve \
   -e TARGET=example.com \
   -e ADMIN_DOMAIN=# Optional \
   -e ADMIN_KEY=# Optional \
-  jonasroussel/hyve
+  ghcr.io/jonasroussel/hyve
 ```
 
 ### Build from source
