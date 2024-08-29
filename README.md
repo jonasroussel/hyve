@@ -13,6 +13,8 @@ Originally created to facilitate the implementation of user-added domains in any
 - Automatic renewal of SSL certificates
 - Admin API to manage domains
 - Multiple store methods (file, SQL, MongoDB)
+- Wildcard domain support
+- Dynamic target URL with JavaScript
 
 ## Install
 
@@ -47,23 +49,24 @@ If you are using the systemd install, you will find the configuration environmen
 
 ### Environment variables
 
-| Variable       | Description                                               | Default            |
-| -------------- | --------------------------------------------------------- | ------------------ |
-| `TARGET`       | The URL where requests will be proxied to                 | Required           |
-| `DATA_DIR`     | The directory where the persistent data will be stored    | `/var/lib/hyve`    |
-| `USER_DIR`     | The directory where the Let's Encrypt user will be stored | `${DATA_DIR}/user` |
-| `STORE`        | The store method to use                                   | `file`             |
-| `DNS_PROVIDER` | The DNS provider to use for solving DNS-01 challenges     | Optional           |
-| `ADMIN_DOMAIN` | The domain name of the admin API                          | Optional           |
-| `ADMIN_KEY`    | The master key of the admin API                           | Optional           |
+| Variable         | Description                                                  | Default                                   |
+| ---------------- | ------------------------------------------------------------ | ----------------------------------------- |
+| `TARGET`         | The URL where requests will be proxied to                    | Required (unless `DYNAMIC_TARGET` is set) |
+| `DYNAMIC_TARGET` | The path to the JS file                                      | Required (unless `TARGET` is set)         |
+| `DATA_DIR`       | The directory where the local persistent data will be stored | `/var/lib/hyve`                           |
+| `USER_DIR`       | The directory where the Let's Encrypt user will be stored    | `${DATA_DIR}/user`                        |
+| `STORE`          | The store method to use                                      | `file`                                    |
+| `DNS_PROVIDER`   | The DNS provider to use for solving DNS-01 challenges        | Optional                                  |
+| `ADMIN_DOMAIN`   | The domain name of the admin API                             | Optional                                  |
+| `ADMIN_KEY`      | The master key of the admin API                              | Optional                                  |
 
 ### Store methods
 
-| Method  | Description                                   | Environment variables                                                  |
-| ------- | --------------------------------------------- | ---------------------------------------------------------------------- |
-| `file`  | Stores certificates in the system file system | `STORE_DIR`                                                            |
-| `sql`   | Stores certificates in a SQL database         | `STORE_DRIVER` = (`sqlite3`, `postgres`, `mysql`), `STORE_DATA_SOURCE` |
-| `mongo` | Stores certificates in a MongoDB database     | `STORE_CONNECTION_URI`, `STORE_DATABASE_NAME`                          |
+| Method  | Description                                   | Environment variables                                                  | Default                    |
+| ------- | --------------------------------------------- | ---------------------------------------------------------------------- | -------------------------- |
+| `file`  | Stores certificates in the system file system | `STORE_DIR`                                                            | `${DATA_DIR}/certificates` |
+| `sql`   | Stores certificates in a SQL database         | `STORE_DRIVER` = (`sqlite3`, `postgres`, `mysql`), `STORE_DATA_SOURCE` | Required                   |
+| `mongo` | Stores certificates in a MongoDB database     | `STORE_CONNECTION_URI`, `STORE_DATABASE_NAME`                          | Requried                   |
 
 ### DNS providers
 
@@ -90,6 +93,10 @@ the DNS provider in the `DNS_PROVIDER` environment variable and all other mandat
 | `ovh`          | OVH            | https://go-acme.github.io/lego/dns/ovh/index.html          |
 | `scaleway`     | Scaleway       | https://go-acme.github.io/lego/dns/scaleway/index.html     |
 | `vercel`       | Vercel         | https://go-acme.github.io/lego/dns/vercel/index.html       |
+
+## Dynamic Target
+
+TODO
 
 ## Admin API
 

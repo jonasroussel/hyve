@@ -6,19 +6,21 @@ import (
 )
 
 var Env struct {
-	Target      string `env:"TARGET"`
-	DataDir     string `env:"DATA_DIR"`
-	UserDir     string `env:"USER_DIR"`
-	StoreType   string `env:"STORE"`
-	DNSProvider string `env:"DNS_PROVIDER"`
-	AdminDomain string `env:"ADMIN_DOMAIN"`
-	AdminKey    string `env:"ADMIN_KEY"`
+	Target         string `env:"TARGET"`
+	DYNAMIC_TARGET string `env:"DYNAMIC_TARGET"`
+	DataDir        string `env:"DATA_DIR"`
+	UserDir        string `env:"USER_DIR"`
+	StoreType      string `env:"STORE"`
+	DNSProvider    string `env:"DNS_PROVIDER"`
+	AdminDomain    string `env:"ADMIN_DOMAIN"`
+	AdminKey       string `env:"ADMIN_KEY"`
 }
 
 func LoadEnv() {
 	Env.Target = os.Getenv("TARGET")
-	if Env.Target == "" {
-		log.Fatal("TARGET environment variable is not set")
+	Env.DYNAMIC_TARGET = os.Getenv("DYNAMIC_TARGET")
+	if Env.Target == "" && Env.DYNAMIC_TARGET == "" {
+		log.Fatal("TARGET or DYNAMIC_TARGET environment variable must be set to start Hyve")
 	}
 
 	Env.DataDir = os.Getenv("DATA_DIR")

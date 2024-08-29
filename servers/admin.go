@@ -20,7 +20,7 @@ func AdminAPI(handler *http.ServeMux) {
 
 	handler.HandleFunc("POST /api/add", func(w http.ResponseWriter, r *http.Request) {
 		if r.TLS.ServerName != tools.Env.AdminDomain {
-			proxy(w, r)
+			proxy.ServeHTTP(w, r)
 			return
 		}
 
@@ -68,7 +68,7 @@ func AdminAPI(handler *http.ServeMux) {
 
 	handler.HandleFunc("POST /api/remove", func(w http.ResponseWriter, r *http.Request) {
 		if r.TLS.ServerName != tools.Env.AdminDomain {
-			proxy(w, r)
+			proxy.ServeHTTP(w, r)
 			return
 		}
 

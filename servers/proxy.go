@@ -1,12 +1,35 @@
 package servers
 
 import (
+	"log"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
 
 	"github.com/jonasroussel/hyve/tools"
 )
+
+var proxy = &httputil.ReverseProxy{
+	Rewrite: func(r *httputil.ProxyRequest) {
+		var target *url.URL
+		var err error
+
+		if tools.Env.DYNAMIC_TARGET != "" {
+			target, err = url.Parse(tools.CallDynamicTarget(r.In))
+		} else {
+			target, err = url.Parse(tools.Env.Target)
+		}
+
+		if err != nil {
+			log.Printf("[WARNING] Failed to parse target URL: %s", err)
+			return
+		}
+
+		r.SetURL(target)
+		r.SetXForwarded()
+		r.Out.Host = target.Host
+	},
+}
 
 func ReverseProxy(handler *http.ServeMux) {
 	handler.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -15,20 +38,6 @@ func ReverseProxy(handler *http.ServeMux) {
 			return
 		}
 
-		proxy(w, r)
+		proxy.ServeHTTP(w, r)
 	})
-}
-
-func proxy(w http.ResponseWriter, r *http.Request) {
-	targetURL, _ := url.Parse(tools.Env.Target)
-
-	proxy := &httputil.ReverseProxy{
-		Rewrite: func(r *httputil.ProxyRequest) {
-			r.SetURL(targetURL)
-			r.SetXForwarded()
-			r.Out.Host = targetURL.Host
-		},
-	}
-
-	proxy.ServeHTTP(w, r)
 }

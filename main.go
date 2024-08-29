@@ -20,6 +20,9 @@ func main() {
 	// Init lego
 	acme.InitLego()
 
+	// Load dynamic target
+	tools.LoadDynamicTarget()
+
 	// Create TLS server
 	tlsListener, tlsServer, tlsHandler := servers.NewTLS()
 
