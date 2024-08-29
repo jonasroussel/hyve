@@ -53,6 +53,7 @@ If you are using the systemd install, you will find the configuration environmen
 | `DATA_DIR`     | The directory where the persistent data will be stored    | `/var/lib/hyve`    |
 | `USER_DIR`     | The directory where the Let's Encrypt user will be stored | `${DATA_DIR}/user` |
 | `STORE`        | The store method to use                                   | `file`             |
+| `DNS_PROVIDER` | The DNS provider to use for solving DNS-01 challenges     | Optional           |
 | `ADMIN_DOMAIN` | The domain name of the admin API                          | Optional           |
 | `ADMIN_KEY`    | The master key of the admin API                           | Optional           |
 
@@ -63,6 +64,32 @@ If you are using the systemd install, you will find the configuration environmen
 | `file`  | Stores certificates in the system file system | `STORE_DIR`                                                            |
 | `sql`   | Stores certificates in a SQL database         | `STORE_DRIVER` = (`sqlite3`, `postgres`, `mysql`), `STORE_DATA_SOURCE` |
 | `mongo` | Stores certificates in a MongoDB database     | `STORE_CONNECTION_URI`, `STORE_DATABASE_NAME`                          |
+
+### DNS providers
+
+If you wish to use a wildcard domain, Hyve will need to resolve a DNS-01 challenge that requires temporary updates of DNS records. To do so, you need to define
+the DNS provider in the `DNS_PROVIDER` environment variable and all other mandatory variables to authenticate with the provider.
+
+#### List of all the available DNS providers
+
+| Provider       | Description    | Documentation for the provider                             |
+| -------------- | -------------- | ---------------------------------------------------------- |
+| `arvancloud`   | ArvanCloud DNS | https://go-acme.github.io/lego/dns/arvancloud/index.html   |
+| `autodns`      | AutoDNS        | https://go-acme.github.io/lego/dns/autodns/index.html      |
+| `bunny`        | Bunny.net      | https://go-acme.github.io/lego/dns/bunny/index.html        |
+| `clouddns`     | Cloud DNS      | https://go-acme.github.io/lego/dns/clouddns/index.html     |
+| `digitalocean` | DigitalOcean   | https://go-acme.github.io/lego/dns/digitalocean/index.html |
+| `easydns`      | EasyDNS        | https://go-acme.github.io/lego/dns/easydns/index.html      |
+| `gandi`        | Gandi.net      | https://go-acme.github.io/lego/dns/gandi/index.html        |
+| `godaddy`      | GoDaddy        | https://go-acme.github.io/lego/dns/godaddy/index.html      |
+| `ionos`        | IONOS          | https://go-acme.github.io/lego/dns/ionos/index.html        |
+| `linode`       | Linode         | https://go-acme.github.io/lego/dns/linode/index.html       |
+| `namedotcom`   | Name.com       | https://go-acme.github.io/lego/dns/namedotcom/index.html   |
+| `namecheap`    | Namecheap      | https://go-acme.github.io/lego/dns/namecheap/index.html    |
+| `oraclecloud`  | Oracle Cloud   | https://go-acme.github.io/lego/dns/oraclecloud/index.html  |
+| `ovh`          | OVH            | https://go-acme.github.io/lego/dns/ovh/index.html          |
+| `scaleway`     | Scaleway       | https://go-acme.github.io/lego/dns/scaleway/index.html     |
+| `vercel`       | Vercel         | https://go-acme.github.io/lego/dns/vercel/index.html       |
 
 ## Admin API
 

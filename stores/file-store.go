@@ -75,15 +75,21 @@ func (store FileStore) AddCertificate(domain string, cert Certificate) error {
 }
 
 func (store FileStore) GetCertificate(domain string) (*Certificate, error) {
+	wildcardDir := fmt.Sprintf("%s/%s", store.Directory, tools.PredictWildcard(domain))
 	domainDir := fmt.Sprintf("%s/%s", store.Directory, domain)
 
 	var cert Certificate
 
-	info, err := os.ReadFile(fmt.Sprintf("%s/info.json", domainDir))
-	if os.IsNotExist(err) {
-		return nil, ErrNotFound
-	} else if err != nil {
-		return nil, err
+	info, err := os.ReadFile(fmt.Sprintf("%s/info.json", wildcardDir))
+	if err == nil && len(info) > 0 {
+		domainDir = wildcardDir
+	} else {
+		info, err = os.ReadFile(fmt.Sprintf("%s/info.json", domainDir))
+		if os.IsNotExist(err) {
+			return nil, ErrNotFound
+		} else if err != nil {
+			return nil, err
+		}
 	}
 
 	err = json.Unmarshal(info, &cert)

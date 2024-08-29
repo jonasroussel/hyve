@@ -3,6 +3,7 @@ package tools
 import (
 	"encoding/json"
 	"io"
+	"strings"
 )
 
 func ParseBody(body io.ReadCloser, out any) error {
@@ -18,4 +19,9 @@ func ParseBody(body io.ReadCloser, out any) error {
 	}
 
 	return nil
+}
+
+func PredictWildcard(domain string) string {
+	parts := strings.Split(domain, ".")
+	return "*." + strings.Join(parts[1:], ".")
 }

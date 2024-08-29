@@ -29,6 +29,18 @@ func InitLego() {
 		log.Fatal(err)
 	}
 
+	if tools.Env.DNSProvider != "" {
+		err = LoadDNS01Provider()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = client.Challenge.SetDNS01Provider(DNS01Provider)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
 	legoClient = client
 }
 

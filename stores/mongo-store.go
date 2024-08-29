@@ -7,6 +7,7 @@ import (
 	"slices"
 	"time"
 
+	"github.com/jonasroussel/hyve/tools"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -81,7 +82,12 @@ func (store MongoStore) GetCertificate(domain string) (*Certificate, error) {
 	defer cancel()
 
 	var cert Certificate
-	err := store.db.Collection("hyve_certificates").FindOne(ctx, bson.M{"domain": domain}).Decode(&cert)
+	err := store.db.Collection("hyve_certificates").FindOne(ctx, bson.M{
+		"$or": bson.A{
+			bson.M{"domain": domain},
+			bson.M{"domain": tools.PredictWildcard(domain)},
+		},
+	}).Decode(&cert)
 	if err == mongo.ErrNoDocuments {
 		return nil, ErrNotFound
 	} else if err != nil {

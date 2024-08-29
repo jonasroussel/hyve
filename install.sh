@@ -6,17 +6,17 @@ arch=$(uname -m)
 link="https://github.com/jonasroussel/hyve/releases/latest/download/hyve_${os}_${arch}.tar.gz"
 
 # Check if hyve is already installed
-if command -v hyve &> /dev/null
+if type "hyve" &> /dev/null
 then
 	echo "hyve is already installed"
 	exit 0
 fi
 
 # Download the binary with wget or curl
-if command -v wget &> /dev/null
+if type "wget" &> /dev/null
 then
 	wget -O hyve.tar.gz "$link"
-elif command -v curl &> /dev/null
+elif type "curl" &> /dev/null
 then
 	curl -L -o hyve.tar.gz "$link"
 else

@@ -11,6 +11,7 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jonasroussel/hyve/tools"
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -85,8 +86,8 @@ func (store SQLStore) AddCertificate(domain string, cert Certificate) error {
 }
 
 func (store SQLStore) GetCertificate(domain string) (*Certificate, error) {
-	query := "SELECT domain, certificate, private_key, issuer, expires_at, created_at FROM hyve_certificates WHERE domain = ?"
-	row := store.db.QueryRow(query, domain)
+	query := "SELECT domain, certificate, private_key, issuer, expires_at, created_at FROM hyve_certificates WHERE domain = ? OR domain = ?"
+	row := store.db.QueryRow(query, domain, tools.PredictWildcard(domain))
 
 	var cert Certificate
 	err := row.Scan(&cert.Domain, &cert.CertificateData, &cert.PrivateKeyData, &cert.Issuer, &cert.ExpiresAt, &cert.CreatedAt)

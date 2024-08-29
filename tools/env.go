@@ -10,6 +10,7 @@ var Env struct {
 	DataDir     string `env:"DATA_DIR"`
 	UserDir     string `env:"USER_DIR"`
 	StoreType   string `env:"STORE"`
+	DNSProvider string `env:"DNS_PROVIDER"`
 	AdminDomain string `env:"ADMIN_DOMAIN"`
 	AdminKey    string `env:"ADMIN_KEY"`
 }
@@ -45,6 +46,8 @@ func LoadEnv() {
 	} else {
 		Env.StoreType = "file"
 	}
+
+	Env.DNSProvider = os.Getenv("DNS_PROVIDER")
 
 	Env.AdminDomain = os.Getenv("ADMIN_DOMAIN")
 	Env.AdminKey = os.Getenv("ADMIN_KEY")
