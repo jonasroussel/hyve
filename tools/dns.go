@@ -3,6 +3,7 @@ package tools
 import (
 	"errors"
 	"net"
+	"strings"
 )
 
 var adminIPS []net.IP
@@ -13,9 +14,18 @@ func IsDNSValid(domain string) bool {
 		return false
 	}
 
-	ips, err := net.LookupIP(domain)
-	if err != nil {
-		return false
+	var ips []net.IP
+
+	if strings.HasPrefix(domain, "*.") {
+		ips, err = net.LookupIP(strings.Replace(domain, "*", "_hyve", 1))
+		if err != nil {
+			return false
+		}
+	} else {
+		ips, err = net.LookupIP(domain)
+		if err != nil {
+			return false
+		}
 	}
 
 	for _, ip := range ips {
