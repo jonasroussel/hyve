@@ -56,6 +56,7 @@ func RegisterDomain(domain string) error {
 	}
 
 	cert := stores.Certificate{
+		Domain:          rawCert.Domain,
 		CertificateData: rawCert.Certificate,
 		PrivateKeyData:  rawCert.PrivateKey,
 		Issuer:          rawCert.CertStableURL,
