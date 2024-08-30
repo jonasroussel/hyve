@@ -1,12 +1,21 @@
 package tools
 
 import (
+	"context"
 	"errors"
 	"net"
 	"strings"
+	"time"
 )
 
-var adminIPS []net.IP
+var adminIPS []net.IPAddr
+var resolver = &net.Resolver{
+	PreferGo: true,
+	Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
+		d := net.Dialer{Timeout: time.Millisecond * time.Duration(10000)}
+		return d.DialContext(ctx, network, "1.1.1.1:53")
+	},
+}
 
 func IsDNSValid(domain string) bool {
 	err := lazyLoadAdminIPS()
@@ -14,15 +23,15 @@ func IsDNSValid(domain string) bool {
 		return false
 	}
 
-	var ips []net.IP
+	var ips []net.IPAddr
 
 	if strings.HasPrefix(domain, "*.") {
-		ips, err = net.LookupIP(strings.Replace(domain, "*", "_hyve", 1))
+		ips, err = resolver.LookupIPAddr(context.Background(), strings.Replace(domain, "*", "_hyve", 1))
 		if err != nil {
 			return false
 		}
 	} else {
-		ips, err = net.LookupIP(domain)
+		ips, err = resolver.LookupIPAddr(context.Background(), domain)
 		if err != nil {
 			return false
 		}
@@ -30,7 +39,7 @@ func IsDNSValid(domain string) bool {
 
 	for _, ip := range ips {
 		for _, adminIP := range adminIPS {
-			if ip.Equal(adminIP) {
+			if ip.IP.Equal(adminIP.IP) {
 				return true
 			}
 		}
@@ -48,7 +57,7 @@ func lazyLoadAdminIPS() error {
 		return errors.New("ADMIN_DOMAIN environment variable is not set")
 	}
 
-	ips, err := net.LookupIP(Env.AdminDomain)
+	ips, err := resolver.LookupIPAddr(context.Background(), Env.AdminDomain)
 	if err != nil {
 		return err
 	}
