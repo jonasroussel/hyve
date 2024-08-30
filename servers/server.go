@@ -14,7 +14,7 @@ func NewTLS() (net.Listener, *http.Server, *http.ServeMux) {
 
 	listener, err := tls.Listen("tcp", ":443", &tls.Config{
 		GetCertificate: caching.CertificateRetriever,
-		NextProtos:     []string{"h2", "http/1.1"},
+		NextProtos:     []string{"h2", "h2c", "http/1.1", "http/1.0", "spdy/2", "spdy/3"},
 	})
 	if err != nil {
 		log.Fatal(err)
