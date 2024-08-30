@@ -5,9 +5,20 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 
 	"github.com/jonasroussel/hyve/caching"
 )
+
+type LoggerWriter struct{}
+
+func (w LoggerWriter) Write(p []byte) (n int, err error) {
+	if string(p) == "EOF" || string(p) == "certificate not found" {
+		return 0, nil
+	} else {
+		return os.Stdout.Write(p)
+	}
+}
 
 func NewTLS() (net.Listener, *http.Server, *http.ServeMux) {
 	handler := http.NewServeMux()
@@ -20,7 +31,10 @@ func NewTLS() (net.Listener, *http.Server, *http.ServeMux) {
 		log.Fatal(err)
 	}
 
-	server := &http.Server{Handler: handler}
+	server := &http.Server{
+		Handler:  handler,
+		ErrorLog: log.New(LoggerWriter{}, "[TLS] ", log.LstdFlags),
+	}
 
 	return listener, server, handler
 }
