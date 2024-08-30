@@ -36,7 +36,7 @@ func IsDNSValid(domain string) bool {
 		}
 	}
 
-	return true
+	return false
 }
 
 func lazyLoadAdminIPS() error {
