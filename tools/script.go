@@ -2,10 +2,12 @@ package tools
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"regexp"
+	"strings"
 
 	"github.com/dop251/goja"
 )
@@ -49,6 +51,15 @@ func LoadDynamicTarget() {
 }
 
 func CallDynamicTarget(req *http.Request) string {
+	host := req.Host
+
+	path := req.URL.EscapedPath()
+	if path != "/" {
+		path = strings.TrimRight(path, "/")
+	}
+
+	url := fmt.Sprintf("https://%s%s", host, path)
+
 	query := map[string]string{}
 	for k, v := range req.URL.Query() {
 		query[k] = v[0]
@@ -59,5 +70,5 @@ func CallDynamicTarget(req *http.Request) string {
 		headers[k] = v[0]
 	}
 
-	return proxyCallback(req.URL.String(), req.URL.Host, req.URL.EscapedPath(), query, headers)
+	return proxyCallback(url, host, path, query, headers)
 }
