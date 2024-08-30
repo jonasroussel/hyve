@@ -6,17 +6,17 @@ arch=$(uname -m)
 link="https://github.com/jonasroussel/hyve/releases/latest/download/hyve_${os}_${arch}.tar.gz"
 
 # Check if hyve is already installed
-if type "hyve" &> /dev/null
+if command -v "hyve" &> /dev/null
 then
 	echo "hyve is already installed"
 	exit 0
 fi
 
 # Download the binary with wget or curl
-if type "wget" &> /dev/null
+if command -v "wget" &> /dev/null
 then
 	wget -O hyve.tar.gz "$link"
-elif type "curl" &> /dev/null
+elif command -v "curl" &> /dev/null
 then
 	curl -L -o hyve.tar.gz "$link"
 else
@@ -36,13 +36,10 @@ chmod +x hyve
 # Move the binary to /usr/bin
 sudo mv hyve /usr/bin
 
-# Ask for the target url
-read -p "Please enter the target URL to which requests will be proxied: " target
-
 # Create the config.env file
 sudo mkdir -p /etc/hyve
 sudo cat <<EOF | sudo tee /etc/hyve/config.env
-TARGET=$target
+TARGET=
 DATA_DIR=/var/lib/hyve
 USER_DIR=/var/lib/hyve/user
 STORE=file

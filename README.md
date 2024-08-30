@@ -21,7 +21,7 @@ Originally created to facilitate the implementation of user-added domains in any
 ### On Linux with systemd
 
 ```shell
-wget -O- 'https://raw.githubusercontent.com/jonasroussel/hyve/main/install.sh' | sh
+wget -O- 'https://raw.githubusercontent.com/jonasroussel/hyve/main/install.sh' | bash
 ```
 
 ### With Docker

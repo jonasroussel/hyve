@@ -40,4 +40,9 @@ func Load() {
 	default:
 		log.Fatal("STORE_TYPE not supported")
 	}
+
+	err := Active.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
