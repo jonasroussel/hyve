@@ -16,6 +16,8 @@ var proxy = &httputil.ReverseProxy{
 
 		if tools.Env.DYNAMIC_TARGET != "" {
 			target, err = url.Parse(tools.CallDynamicTarget(r.In))
+			r.Out.URL.RawPath = ""
+			r.Out.URL.Path = "/"
 		} else {
 			target, err = url.Parse(tools.Env.Target)
 		}
