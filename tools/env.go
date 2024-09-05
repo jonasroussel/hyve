@@ -3,17 +3,19 @@ package tools
 import (
 	"log"
 	"os"
+	"regexp"
 )
 
 var Env struct {
-	Target         string `env:"TARGET"`
-	DYNAMIC_TARGET string `env:"DYNAMIC_TARGET"`
-	DataDir        string `env:"DATA_DIR"`
-	UserDir        string `env:"USER_DIR"`
-	StoreType      string `env:"STORE"`
-	DNSProvider    string `env:"DNS_PROVIDER"`
-	AdminDomain    string `env:"ADMIN_DOMAIN"`
-	AdminKey       string `env:"ADMIN_KEY"`
+	Target         string         `env:"TARGET"`
+	DYNAMIC_TARGET string         `env:"DYNAMIC_TARGET"`
+	DataDir        string         `env:"DATA_DIR"`
+	UserDir        string         `env:"USER_DIR"`
+	StoreType      string         `env:"STORE"`
+	DNSProvider    string         `env:"DNS_PROVIDER"`
+	AdminDomain    string         `env:"ADMIN_DOMAIN"`
+	AdminKey       string         `env:"ADMIN_KEY"`
+	Blacklist      *regexp.Regexp `env:"BLACKLIST"`
 }
 
 func LoadEnv() {
@@ -56,5 +58,9 @@ func LoadEnv() {
 
 	if Env.AdminDomain == "" || Env.AdminKey == "" {
 		log.Println("\033[33mWARNING: ADMIN(s) environment variables are not set, admin API will not be available\033[0m")
+	}
+
+	if os.Getenv("BLACKLIST") != "" {
+		Env.Blacklist = regexp.MustCompile(os.Getenv("BLACKLIST"))
 	}
 }

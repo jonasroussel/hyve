@@ -6,6 +6,7 @@ import (
 	"errors"
 
 	"github.com/jonasroussel/hyve/stores"
+	"github.com/jonasroussel/hyve/tools"
 )
 
 var cachingQueue = list.New()
@@ -18,6 +19,10 @@ type CahcedData struct {
 func CertificateRetriever(chi *tls.ClientHelloInfo) (*tls.Certificate, error) {
 	if chi.ServerName == "" {
 		return nil, errors.New("server name (sni) is empty")
+	}
+
+	if tools.Env.Blacklist != nil && tools.Env.Blacklist.MatchString(chi.ServerName) {
+		return nil, errors.New("server name (" + chi.ServerName + ") is blacklisted")
 	}
 
 	cert := loadFromCache(chi.ServerName)
