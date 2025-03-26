@@ -2,8 +2,7 @@ package stores
 
 import (
 	"context"
-	"log"
-	"os"
+	"errors"
 	"slices"
 	"time"
 
@@ -14,34 +13,32 @@ import (
 )
 
 type MongoStore struct {
-	ConnectionString string
-	DatabaseName     string
+	ConnectionUri string
+	DatabaseName  string
 
 	db *mongo.Database
 }
 
-func NewMongoStore() *MongoStore {
-	connStr := os.Getenv("STORE_CONNECTION_URI")
-	if connStr == "" {
-		log.Fatal("STORE_CONNECTION_URI environment variable must be set when using STORE=mongo")
+func NewMongoStore(connectionUri string, dbName string) (*MongoStore, error) {
+	if connectionUri == "" {
+		return nil, errors.New("connectionUri must be set when using mongo store")
 	}
 
-	dbName := os.Getenv("STORE_DATABASE_NAME")
 	if dbName == "" {
-		log.Fatal("STORE_DATABASE_NAME environment variable must be set when using STORE=mongo")
+		return nil, errors.New("dbName must be set when using mongo store")
 	}
 
 	return &MongoStore{
-		ConnectionString: connStr,
-		DatabaseName:     dbName,
-	}
+		ConnectionUri: connectionUri,
+		DatabaseName:  dbName,
+	}, nil
 }
 
 func (store *MongoStore) Load() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(store.ConnectionString))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(store.ConnectionUri))
 	if err != nil {
 		return err
 	}
@@ -89,7 +86,7 @@ func (store MongoStore) GetCertificate(domain string) (*Certificate, error) {
 		},
 	}).Decode(&cert)
 	if err == mongo.ErrNoDocuments {
-		return nil, ErrNotFound
+		return nil, ErrCertNotFound
 	} else if err != nil {
 		return nil, err
 	}
@@ -161,6 +158,10 @@ func (store MongoStore) RemoveCertificate(domain string) error {
 	}
 
 	return nil
+}
+
+func (store MongoStore) Close() error {
+	return store.db.Client().Disconnect(context.Background())
 }
 
 //---------//

@@ -2,9 +2,9 @@ package stores
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
-	"os"
 	"runtime"
 	"slices"
 	"strings"
@@ -23,21 +23,19 @@ type SQLStore struct {
 	db *sql.DB
 }
 
-func NewSQLStore() *SQLStore {
-	driver := os.Getenv("STORE_DRIVER")
+func NewSQLStore(driver string, dataSource string) (*SQLStore, error) {
 	if driver == "" {
-		driver = "sqlite3"
+		return nil, errors.New("driver must be set when using SQL store")
 	}
 
-	dataSource := os.Getenv("STORE_DATA_SOURCE")
 	if dataSource == "" {
-		log.Fatal("STORE_DATA_SOURCE environment variable must be set when using STORE=sql")
+		return nil, errors.New("dataSource must be set when using SQL store")
 	}
 
 	return &SQLStore{
 		Driver:     driver,
 		DataSource: dataSource,
-	}
+	}, nil
 }
 
 func (store *SQLStore) Load() error {
@@ -92,7 +90,7 @@ func (store SQLStore) GetCertificate(domain string) (*Certificate, error) {
 	var cert Certificate
 	err := row.Scan(&cert.Domain, &cert.CertificateData, &cert.PrivateKeyData, &cert.Issuer, &cert.ExpiresAt, &cert.CreatedAt)
 	if err == sql.ErrNoRows {
-		return nil, ErrNotFound
+		return nil, ErrCertNotFound
 	} else if err != nil {
 		return nil, err
 	}
@@ -165,6 +163,10 @@ func (store SQLStore) RemoveCertificate(domain string) error {
 	}
 
 	return nil
+}
+
+func (store SQLStore) Close() error {
+	return store.db.Close()
 }
 
 //---------//

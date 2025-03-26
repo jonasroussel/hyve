@@ -2,7 +2,6 @@ package tools
 
 import (
 	"context"
-	"errors"
 	"net"
 	"strings"
 	"time"
@@ -53,11 +52,7 @@ func lazyLoadAdminIPS() error {
 		return nil
 	}
 
-	if Env.AdminDomain == "" {
-		return errors.New("ADMIN_DOMAIN environment variable is not set")
-	}
-
-	ips, err := resolver.LookupIPAddr(context.Background(), Env.AdminDomain)
+	ips, err := resolver.LookupIPAddr(context.Background(), "TODO")
 	if err != nil {
 		return err
 	}
